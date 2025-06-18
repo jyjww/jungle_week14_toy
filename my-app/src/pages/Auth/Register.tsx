@@ -1,5 +1,6 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
+import { registerApi } from "../../api/Auth/registerApi";
 
 function Register(){
     const [email, setEmail] = useState('');
@@ -8,6 +9,21 @@ function Register(){
     const [errorMsg, setErrormsg] = useState('');
 
     const [showPassword, setShowPassword] = useState(false)
+
+    {/* Server API */}
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const isValid = await handleCheckEmail()
+
+        if (!isValid) return
+        try {
+            await registerApi(email, name, password)
+            alert("회원가입 성공")
+            window.location.href = "/"
+        }catch (err: any){
+            setErrormsg(err.message)
+        }
+    }
 
     const isValidEmail = (email: string) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -18,9 +34,6 @@ function Register(){
             if (!isValidEmail(email)){
             setErrormsg("유효하지 않은 이메일 형식입니다.")
             resolve(false)
-            } else if (email === "test@example.com"){
-                setErrormsg("이미 등록된 이메일입니다")
-                resolve(false)
             } else{
                 setErrormsg("")
                 resolve(true)
@@ -31,7 +44,7 @@ function Register(){
     return(
         <div className="flex items-center justify-center px-4 h-screen bg-gray-100 overflow-hidden">
             <div className="w-full max-w-md min-h-[350px] p-8 bg-white rounded-xl shadow-lg">
-                <form className="login-form flex flex-col gap-4 flex-grow justify-between">
+                <form className="login-form flex flex-col gap-4 flex-grow justify-between" onSubmit={handleSubmit}>
                     <h2 className="text-2xl font-bold text-center text-gray-800">Register</h2>
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left">
@@ -89,14 +102,6 @@ function Register(){
                     <div>
                         <button
                             type="submit"
-                            onClick={async(e) => {
-                                e.preventDefault()
-                                const isValid = await handleCheckEmail()
-                                if(isValid){
-                                    alert("회원가입 완료")
-                                    window.location.href="/home"
-                                }
-                            }}
                             className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
                         >
                             Sign up

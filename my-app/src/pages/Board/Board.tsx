@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react';
-import { dummyPosts } from "../../data";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { Post } from '../../types';
+import { requireAuth } from "../../api/Auth/requireAuth";
+import { getPostList } from '../../api/Board/boardApi';
 import BoardSearchBar from '../../components/Board/BoardSearchBar';
 import type { SearchQuery } from '../../components/Board/BoardSearchBar';
 import Pagination from '../../components/Board/Pagination';
@@ -10,12 +13,28 @@ function Board() {
         console.log('검색 조건:', query);
     }
 
+    const [posts, setPosts] = useState<Post[]>([])
+
+    const navigate = useNavigate()
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const data = await getPostList()
+                setPosts(data)
+            }catch(err:any){
+                console.error("글목록 불러오기 실패", err)
+            }
+        }
+        requireAuth(navigate)
+        fetchPosts()
+    }, [])
+
     {/* Pagination */}
     const [currentPage, setCurrentPage] = useState(1);
     const POSTS_PER_PAGE = 5;
 
-    const totalPages = Math.ceil(dummyPosts.length / POSTS_PER_PAGE);
-    const paginatedPosts = dummyPosts.slice(
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const paginatedPosts = posts.slice(
         (currentPage - 1) * POSTS_PER_PAGE,
         currentPage * POSTS_PER_PAGE
     );
@@ -44,12 +63,21 @@ function Board() {
                                     {post.title}
                                 </Link>
                             </td>
-                            <td className="p-3">{post.author}</td>
-                            <td className="p-3">{post.date}</td>
+                            <td className="p-3">{post.author?.name}</td>
+                            <td className="p-3">{post.createdAt?.slice(0, 10)}</td>
                         </tr>
                     ))}
                 </tbody>
                 </table>
+                <div className="mt-[34rem] flex justify-center">
+                    <button
+                        type="button"
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                        onClick={() => navigate("/board/write")}
+                    >
+                        게시글 작성
+                    </button>
+                </div>
             </div>
 
             {/* Pagination */}

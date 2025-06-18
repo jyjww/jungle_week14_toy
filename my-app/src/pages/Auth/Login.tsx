@@ -1,7 +1,7 @@
-import { dummyUser } from "../../data";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ForgotPassword from "../../components/Auth/ForgotPassword";
+import { loginApi } from "../../api/Auth/loginApi";
 
 
 function Login(){
@@ -11,18 +11,15 @@ function Login(){
     const navigate = useNavigate()
     const [showModal, setShowModal] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        const userConf = dummyUser.find(
-            user => user.username === email && user.password === password
-        )
-
-        if(userConf){
-            localStorage.setItem('token', userConf.token)
-            navigate('/home')   // 로그인 성공 시 자동 이동
-        }else{
-            setErrormsg('⚠ 로그인 정보가 올바르지 않습니다.')
+        try{
+            const data = await loginApi(email, password)
+            localStorage.setItem("token", data.token)
+            navigate("/board")
+        }catch (err: any){
+            setErrormsg(err.message || "⚠ 로그인 실패")
         }
     }
     return (

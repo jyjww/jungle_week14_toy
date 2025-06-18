@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react"
+import { updatePassword } from "../../api/Auth/mypageApi";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     onClose: () => void
@@ -12,14 +14,25 @@ const PasswordChangeModal: React.FC<Props> = ({onClose}) => {
     const [errorMsg, setErrormsg] = useState('')
 
     const [showPassword, setShowPassword] = useState(false)
-
-    const handleSubmit = (e:React.FormEvent) => {
+    const navigate = useNavigate()
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
         if (newPassword !== confPassword){
             setErrormsg('⚠ 비밀번호가 일치하지 않습니다.')
             return
         }
         {/* Server API */}
+        try {
+            const response = await updatePassword(origPassword, newPassword)
+            console.log("비밀번호 변경 성공:", response)
+            alert("비밀번호 변경이 완료되었습니다")
+            onClose()
+            localStorage.removeItem("token")
+            navigate('/')
+        }catch (err:any){
+            console.error(err.message)
+        }
     }
 
     return (
@@ -28,7 +41,7 @@ const PasswordChangeModal: React.FC<Props> = ({onClose}) => {
                 <h3 className="text-xl font-bold mb-4 text-center">
                     비밀번호 변경
                 </h3>
-                <form onSubmit={handleSubmit} className="w-full space-y-4 flex flex-col items-center">
+                <div className="w-full space-y-4 flex flex-col items-center">
                     <div className="relative w-full">
                         <input
                             type={showPassword ? "text" : "password"}
@@ -88,13 +101,13 @@ const PasswordChangeModal: React.FC<Props> = ({onClose}) => {
                         </button>
                         <button
                             type="submit"
-                            className="w-1/2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                             onClick={handleSubmit}
+                            className="w-1/2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                         >
                             변경
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )

@@ -5,10 +5,6 @@
 
 ---
 
-## GitHub Repo
-
-[https://github.com/jyjww/jungle_week14_toy](https://github.com/jyjww/jungle_week14_toy)
-
 ## Dev Log
 
 - [프로젝트 기획안 (Notion)](https://www.notion.so/jyjww/Jungle-Week14-Toy-Project-211ced561b75807a8782f684daa737a3?source=copy_link)
@@ -25,6 +21,7 @@ React + Express.js 기반의 간단한 투두형 게시판 프로젝트입니다
 
 ### 📁 프로젝트 구조
 
+<pre><code>
 src/
 ├── assets/
 │   ├── App.css
@@ -57,6 +54,7 @@ src/
 ├── App.tsx                        # 라우팅 포함 전체 앱 구성
 ├── Applayout.tsx                  # 공통 레이아웃 (헤더, 푸터 등)
 └── data.ts                        # 더미 데이터 및 타입
+</code></pre>
 
 ---
 
